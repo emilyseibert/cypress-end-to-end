@@ -10,7 +10,7 @@ const formSchema = yup.object().shape({
     .required("Must include email address."),
   terms: yup.boolean().oneOf([true], "please agree to terms of use"),
   positions: yup.string(),
-  motivation: yup.string().required("must include why you'd like to join")
+  motivation: yup.string().required("must include why you'd like to join"),
 });
 
 export default function Form() {
@@ -23,7 +23,7 @@ export default function Form() {
     email: "",
     terms: "",
     positions: "",
-    motivation: ""
+    motivation: "",
   });
 
   // state for our errors
@@ -32,23 +32,23 @@ export default function Form() {
     email: "",
     terms: "",
     positions: "",
-    motivation: ""
+    motivation: "",
   });
 
   // new state to set our post request too. So we can console.log and see it.
   const [post, setPost] = useState([]);
 
   useEffect(() => {
-    formSchema.isValid(formState).then(valid => {
+    formSchema.isValid(formState).then((valid) => {
       setButtonDisabled(!valid);
     });
   }, [formState]);
 
-  const formSubmit = e => {
+  const formSubmit = (e) => {
     e.preventDefault();
     axios
       .post("https://reqres.in/api/users", formState)
-      .then(res => {
+      .then((res) => {
         setPost(res.data); // get just the form data from the REST api
         console.log("success", post);
         // reset form if successful
@@ -57,37 +57,37 @@ export default function Form() {
           email: "",
           terms: "",
           positions: "",
-          motivation: ""
+          motivation: "",
         });
       })
-      .catch(err => console.log(err.response));
+      .catch((err) => console.log(err.response));
   };
 
-  const validateChange = e => {
+  const validateChange = (e) => {
     // Reach will allow us to "reach" into the schema and test only one part.
     yup
       .reach(formSchema, e.target.name)
       .validate(e.target.value)
-      .then(valid => {
+      .then((valid) => {
         setErrors({
           ...errors,
-          [e.target.name]: ""
+          [e.target.name]: "",
         });
       })
-      .catch(err => {
+      .catch((err) => {
         setErrors({
           ...errors,
-          [e.target.name]: err.errors[0]
+          [e.target.name]: err.errors[0],
         });
       });
   };
 
-  const inputChange = e => {
+  const inputChange = (e) => {
     e.persist();
     const newFormData = {
       ...formState,
       [e.target.name]:
-        e.target.type === "checkbox" ? e.target.checked : e.target.value
+        e.target.type === "checkbox" ? e.target.checked : e.target.value,
     };
 
     validateChange(e);
@@ -96,52 +96,53 @@ export default function Form() {
 
   return (
     <form onSubmit={formSubmit}>
-      <label htmlFor='name'>
+      <label htmlFor="name">
         Name
         <input
-          type='text'
-          name='name'
+          type="text"
+          name="name"
           value={formState.name}
           onChange={inputChange}
+          data-cy="name"
         />
-        {errors.name.length > 0 ? <p className='error'>{errors.name}</p> : null}
+        {errors.name.length > 0 ? <p className="error">{errors.name}</p> : null}
       </label>
-      <label htmlFor='email'>
+      <label htmlFor="email">
         Email
         <input
-          type='text'
-          name='email'
+          type="text"
+          name="email"
           value={formState.email}
           onChange={inputChange}
         />
         {errors.email.length > 0 ? (
-          <p className='error'>{errors.email}</p>
+          <p className="error">{errors.email}</p>
         ) : null}
       </label>
-      <label htmlFor='motivation'>
+      <label htmlFor="motivation">
         Why would you like to help?
         <textarea
-          name='motivation'
+          name="motivation"
           value={formState.motivation}
           onChange={inputChange}
         />
         {errors.motivation.length > 0 ? (
-          <p className='error'>{errors.motivation}</p>
+          <p className="error">{errors.motivation}</p>
         ) : null}
       </label>
-      <label htmlFor='positions'>
+      <label htmlFor="positions">
         What would you like to help with?
-        <select id='positions' name='positions' onChange={inputChange}>
-          <option value='Newsletter'>Newsletter</option>
-          <option value='Yard Work'>Yard Work</option>
-          <option value='Administrative Work'>Administrative Work</option>
-          <option value='Tabling'>Tabling</option>
+        <select id="positions" name="positions" onChange={inputChange}>
+          <option value="Newsletter">Newsletter</option>
+          <option value="Yard Work">Yard Work</option>
+          <option value="Administrative Work">Administrative Work</option>
+          <option value="Tabling">Tabling</option>
         </select>
       </label>
-      <label htmlFor='terms' className='terms'>
+      <label htmlFor="terms" className="terms">
         <input
-          type='checkbox'
-          name='terms'
+          type="checkbox"
+          name="terms"
           checked={formState.terms}
           onChange={inputChange}
         />
@@ -149,7 +150,9 @@ export default function Form() {
       </label>
       {/* displaying our post request data */}
       <pre>{JSON.stringify(post, null, 2)}</pre>
-      <button disabled={buttonDisabled}>Submit</button>
+      <button data-cy="submit" disabled={buttonDisabled}>
+        Submit
+      </button>
     </form>
   );
 }
